@@ -4,7 +4,7 @@
 #include "GameFramework/PlayerController.h"
 #include "MyPlayerController.generated.h"
 
-class UInputMappingContext;	// IMC 곤련 전방 선언
+class UInputMappingContext;	// IMC 관련 전방 선언
 class UInputAction;			// IA 관련 전방 선언
 
 UCLASS()
