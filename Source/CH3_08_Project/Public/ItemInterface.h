@@ -11,15 +11,28 @@ class UItemInterface : public UInterface
 	GENERATED_BODY()
 };
 
+// 실체 C++ 레벨에서 사용할 함수 원형 정의
 class CH3_08_PROJECT_API IItemInterface
 {
 	GENERATED_BODY()
 
 public:
 	// 플레이어가 이 아이템의 범위에 들어왔을 때
-	virtual void OnItemOverlap(AActor* OverlapActor) = 0;
+	UFUNCTION()
+	virtual void OnItemOverlap(
+		UPrimitiveComponent* OverlappedComp,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex,
+		bool bFromSweep,
+		const FHitResult& SweepResult) = 0;
 	// 플레이어가 이 아이템의 범위를 벗어났을때
-	virtual void OnItemEndOverlap(AActor* OverlapActor) = 0;
+	UFUNCTION()
+	virtual void OnItemEndOverlap(
+		UPrimitiveComponent* OverlappedComp,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex) = 0;
 	// 아이템이 사용되었을 때
 	virtual void ActivateItem(AActor* Activator) = 0;
 	// 아이템의 유형(타입)을 반환
