@@ -23,13 +23,13 @@ public:
 	UDataTable* ItemDataTable;
 
 	UFUNCTION(BlueprintCallable, Category="Spawning")
-	void SpawnRandomItem();
+	AActor* SpawnRandomItem();
 	// 스폰 영역 내부에서 무작위 좌표를 얻어오는 함수
 	UFUNCTION(BlueprintCallable, Category="Spawning")
 	FVector GetRandomPointInVolume() const;
 	FItemSpawnRow* GetRandomItem() const;
 	// 특정 아이템 클래스를 스폰하는 함수
 	UFUNCTION(BlueprintCallable, Category = "Spawning")
-	void SpawnItem(TSubclassOf<AActor> ItemClass);
+	AActor* SpawnItem(TSubclassOf<AActor> ItemClass);
 
 };
