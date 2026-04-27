@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "CoreMinimal.h"
 #include "BaseItem.h"
@@ -13,7 +13,7 @@ public:
 	AStarItem();
 
 protected:
-	// ½ºÅ¸ È¹µæ ½Ã ¾òÀ» Á¡¼ö
+	// ìŠ¤íƒ€ íšë“ ì‹œ ì–»ì„ ì ìˆ˜
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	int32 PointValue;
 

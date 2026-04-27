@@ -23,18 +23,8 @@ AMyCharacter::AMyCharacter()
 	// 카메라는 스프링 암의 회전을 따르므로 꺼줌
 	CameraComp->bUsePawnControlRotation = false;
 
-}
-
-void AMyCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
-void AMyCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
+	MaxHealth = 100.0f;
+	Health = MaxHealth;
 }
 
 void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -137,4 +127,35 @@ void AMyCharacter::Look(const FInputActionValue& value)
 	// X는 좌우(Yaw), Y는 상하(Pitch)
 	AddControllerYawInput(LookInput.X);
 	AddControllerPitchInput(LookInput.Y);
+}
+
+float AMyCharacter::GetHealth() const
+{
+	return Health;
+}
+
+float AMyCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	Health = FMath::Clamp(Health - DamageAmount, 0.0f, MaxHealth);
+	UE_LOG(LogTemp, Warning, TEXT("Health : %f"), Health)
+
+	if (Health <= 0.0f)
+	{
+		OnDeath();
+	}
+
+	return ActualDamage;
+}
+
+void AMyCharacter::AddHealth(float Amount)
+{
+	Health = FMath::Clamp(Health + Amount, 0.0f, MaxHealth);
+	UE_LOG(LogTemp, Warning, TEXT("Healing : %f ,Health : %f"), Amount, Health)
+}
+
+void AMyCharacter::OnDeath()
+{
+
 }

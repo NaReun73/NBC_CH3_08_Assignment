@@ -1,4 +1,5 @@
 #include "MineItem.h"
+#include "Kismet/GameplayStatics.h"
 
 AMineItem::AMineItem()
 {
@@ -20,5 +21,17 @@ void AMineItem::BeginPlay()
 
 void AMineItem::ActivateItem(AActor* Activator)
 {
+	if (Activator && Activator->ActorHasTag("Player"))
+	{
+		UGameplayStatics::ApplyDamage(
+			Activator,
+			Damage,
+			nullptr,
+			this,
+			UDamageType::StaticClass()
+		);
+		UE_LOG(LogTemp, Warning, TEXT("Boom : %f"), Damage)
+	}
+
 	DestroyItem();
 }
