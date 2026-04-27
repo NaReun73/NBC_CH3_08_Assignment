@@ -30,7 +30,7 @@ void AMineItem::ActivateItem(AActor* Activator)
 			this,
 			UDamageType::StaticClass()
 		);
-		UE_LOG(LogTemp, Warning, TEXT("Boom : %f"), Damage)
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::Printf(TEXT("%f Damage"), Damage));
 	}
 
 	DestroyItem();
