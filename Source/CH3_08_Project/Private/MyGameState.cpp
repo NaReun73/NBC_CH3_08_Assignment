@@ -2,12 +2,15 @@
 #include "Kismet/GameplayStatics.h"
 #include "SpawnVolume.h"
 #include "StarItem.h"
+#include "MyGameInstance.h"
 
 AMyGameState::AMyGameState()
 {
 	Score = 0;
 	TargetLevelScore = 100;
 	CurrentLevelScore = 0;
+	TargetWaveScore = 30;
+	CurrentWaveScore = 0;
 	WaveDuration = 60.0f;
 	WaveBreakTime = 10.0f;
 	CurrentWaveCount = 0;
@@ -30,7 +33,14 @@ int32 AMyGameState::GetScore() const
 
 void AMyGameState::AddScore(int32 Amount)
 {
-	Score += Amount;
+	if (UGameInstance* GameInstance = GetGameInstance())
+	{
+		UMyGameInstance* MyGameInstance = Cast<UMyGameInstance>(GameInstance);
+		if (MyGameInstance)
+		{
+			MyGameInstance->AddToScore(Amount);
+		}
+	}
 	CurrentLevelScore += Amount;
 }
 
@@ -46,7 +56,16 @@ int32 AMyGameState::GetCurrentLevelScore() const
 
 void AMyGameState::StartLevel()
 {
+	if (UGameInstance* GameInstance = GetGameInstance())
+	{
+		UMyGameInstance* MyGameInstance = Cast<UMyGameInstance>(GameInstance);
+		if (MyGameInstance)
+		{
+			CurrentLevelIndex = MyGameInstance->CurrentLevelIndex;
+		}
+	}
 	TargetLevelScore = 100;
+	TargetWaveScore = 30;
 	CurrentLevelScore = 0;
 	CurrentWaveCount = 0;
 	StartWave();
@@ -77,18 +96,25 @@ void AMyGameState::StartWave()
 
 void AMyGameState::OnWaveTimeUp()
 {
-	UE_LOG(LogTemp, Warning, TEXT("웨이브 종료! 휴식 시작."));
+	if (CurrentWaveScore < TargetWaveScore)
+	{
+		OnGameOver();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("웨이브 종료! 휴식 시작."));
 
-	// 10초 휴식 후 다시 StartWave를 호출하도록 타이머 설정
-	GetWorldTimerManager().SetTimer(
-		WaveTimerHandle,
-		this,
-		&AMyGameState::StartWave,
-		WaveBreakTime,
-		false
-	);
-	// 웨이브 시간 감소
-	WaveDuration -= 15.0f;
+		// 10초 휴식 후 다시 StartWave를 호출하도록 타이머 설정
+		GetWorldTimerManager().SetTimer(
+			WaveTimerHandle,
+			this,
+			&AMyGameState::StartWave,
+			WaveBreakTime,
+			false
+		);
+		// 웨이브 시간 감소
+		WaveDuration -= 15.0f;
+	}
 }
 
 void AMyGameState::OnCompleteLevelScore()
@@ -116,7 +142,16 @@ void AMyGameState::EndLevel()
 	// 타이머 해제
 	GetWorldTimerManager().ClearTimer(WaveTimerHandle);
 
-	CurrentLevelIndex++;
+	if (UGameInstance* GameInstance = GetGameInstance())
+	{
+		UMyGameInstance* MyGameInstance = Cast<UMyGameInstance>(GameInstance);
+		if (MyGameInstance)
+		{
+			AddScore(Score);
+			CurrentLevelIndex++;
+			MyGameInstance->CurrentLevelIndex = CurrentLevelIndex;
+		}
+	}
 
 	// 모든 레벨을 다 돌았으면 게임 오버
 	if (CurrentLevelIndex >= MaxLevels)

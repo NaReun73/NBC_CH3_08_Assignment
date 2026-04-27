@@ -21,6 +21,11 @@ public:
 	int32 TargetLevelScore;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Score")
 	int32 CurrentLevelScore;
+	// 웨이브 목표 점수
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Score")
+	int32 TargetWaveScore;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Score")
+	int32 CurrentWaveScore;
 
 	// 각 Wave가 유지되는 시간
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wave")
