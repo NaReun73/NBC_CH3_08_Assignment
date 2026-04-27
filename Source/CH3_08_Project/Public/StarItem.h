@@ -16,4 +16,6 @@ protected:
 	// ½ºÅ¸ È¹µæ ½Ã ¾òÀ» Á¡¼ö
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	int32 PointValue;
+
+	virtual void ActivateItem(AActor* Activator) override;
 };

@@ -8,5 +8,7 @@ AHealingItem::AHealingItem()
 
 void AHealingItem::ActivateItem(AActor* Activator)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%d Healing"), HealAmount));
+
 	DestroyItem();
 }

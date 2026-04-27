@@ -8,5 +8,5 @@ ABigStarItem::ABigStarItem()
 
 void ABigStarItem::ActivateItem(AActor* Activator)
 {
-	DestroyItem();
+	Super::ActivateItem(Activator);
 }

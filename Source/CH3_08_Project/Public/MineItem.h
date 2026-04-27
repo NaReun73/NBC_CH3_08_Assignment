@@ -15,5 +15,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mine")
 	float Damage;
 
+	virtual void BeginPlay() override;
 	virtual void ActivateItem(AActor* Activator) override;
 };

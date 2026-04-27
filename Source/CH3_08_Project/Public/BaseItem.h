@@ -21,14 +21,17 @@ protected:
 	FName ItemType;
 	
 	// 루트 컴포넌트(씬)
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item|Component")
-	USceneComponent* Scene;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item|Component")
+	//USceneComponent* Scene;
 	// 충돌 컴포넌트 (플레이어 진입 범위 감지)
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item|Component")
 	USphereComponent* Collision;
-	// 아이템 시각 표현용 스태틱 메시
+	// 아이템을 감싸고 있는 구체를 위한 메시
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item|Component")
 	UStaticMeshComponent* StaticMesh;
+	// 아이템 시각 표현용 메시
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item|Component")
+	UStaticMeshComponent* ItemMesh;
 
 	// ItemInterface에서 요구하는 함수들
 	virtual void OnItemOverlap(
