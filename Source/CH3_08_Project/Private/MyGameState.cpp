@@ -3,16 +3,18 @@
 #include "SpawnVolume.h"
 #include "StarItem.h"
 #include "MyGameInstance.h"
+#include "MyPlayerController.h"
+#include "Components/TextBlock.h"
+#include "Blueprint/UserWidget.h"
 
 AMyGameState::AMyGameState()
 {
 	Score = 0;
-	TargetLevelScore = 100;
-	CurrentLevelScore = 0;
-	TargetWaveScore = 30;
+	TargetWaveScore = 5;
 	CurrentWaveScore = 0;
 	WaveDuration = 60.0f;
-	WaveBreakTime = 10.0f;
+	WaveBreakTime = 1.0f;
+	BreakTime = false;
 	CurrentWaveCount = 0;
 	MaxWaves = 3;
 	CurrentLevelIndex = 0;
@@ -24,6 +26,14 @@ void AMyGameState::BeginPlay()
 	Super::BeginPlay();
 
 	StartLevel();
+
+	GetWorldTimerManager().SetTimer(
+		HUDUpdateTimerHandle,
+		this,
+		&AMyGameState::UpdateHUD,
+		0.1f,
+		true
+	);
 }
 
 int32 AMyGameState::GetScore() const
@@ -41,21 +51,19 @@ void AMyGameState::AddScore(int32 Amount)
 			MyGameInstance->AddToScore(Amount);
 		}
 	}
-	CurrentLevelScore += Amount;
-}
-
-int32 AMyGameState::GetTargetLevelScore() const
-{
-	return TargetLevelScore;
-}
-
-int32 AMyGameState::GetCurrentLevelScore() const
-{
-	return CurrentLevelScore;
+	CurrentWaveScore += Amount;
 }
 
 void AMyGameState::StartLevel()
 {
+	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+	{
+		if (AMyPlayerController* MyPlayerController = Cast<AMyPlayerController>(PlayerController))
+		{
+			MyPlayerController->ShowGameHUD();
+		}
+	}
+
 	if (UGameInstance* GameInstance = GetGameInstance())
 	{
 		UMyGameInstance* MyGameInstance = Cast<UMyGameInstance>(GameInstance);
@@ -64,9 +72,8 @@ void AMyGameState::StartLevel()
 			CurrentLevelIndex = MyGameInstance->CurrentLevelIndex;
 		}
 	}
-	TargetLevelScore = 100;
-	TargetWaveScore = 30;
-	CurrentLevelScore = 0;
+
+	TargetWaveScore = 5;
 	CurrentWaveCount = 0;
 	StartWave();
 }
@@ -77,11 +84,21 @@ void AMyGameState::StartWave()
 	if (CurrentWaveCount >= MaxWaves)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("모든 웨이브 종료!"));
-		OnCompleteLevelScore();
+		EndLevel();
 		return;
 	}
 
-	CurrentWaveCount++;
+	if (UGameInstance* GameInstance = GetGameInstance())
+	{
+		UMyGameInstance* MyGameInstance = Cast<UMyGameInstance>(GameInstance);
+		if (MyGameInstance)
+		{
+			CurrentWaveCount++;
+			MyGameInstance->CurrentWaveIndex = CurrentWaveCount;
+		}
+	}
+
+	BreakTime = false;
 	UE_LOG(LogTemp, Warning, TEXT("웨이브 %d 시작!"), CurrentWaveCount);
 
 	// 웨이브 지속 시간 만큼 타이머 설정
@@ -96,6 +113,9 @@ void AMyGameState::StartWave()
 
 void AMyGameState::OnWaveTimeUp()
 {
+	GetWorldTimerManager().ClearTimer(WaveTimerHandle);
+
+	// 목표 점수 달성 확인
 	if (CurrentWaveScore < TargetWaveScore)
 	{
 		OnGameOver();
@@ -103,6 +123,8 @@ void AMyGameState::OnWaveTimeUp()
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("웨이브 종료! 휴식 시작."));
+
+		BreakTime = true;
 
 		// 10초 휴식 후 다시 StartWave를 호출하도록 타이머 설정
 		GetWorldTimerManager().SetTimer(
@@ -113,28 +135,24 @@ void AMyGameState::OnWaveTimeUp()
 			false
 		);
 		// 웨이브 시간 감소
-		WaveDuration -= 15.0f;
+		WaveDuration -= 10.0f;
+		CurrentWaveScore = 0;
 	}
 }
 
-void AMyGameState::OnCompleteLevelScore()
+void AMyGameState::OnCompleteWaveScore()
 {
-	if (CurrentLevelScore >= TargetLevelScore)
+	if (CurrentWaveScore >= TargetWaveScore)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("목표 점수 달성"));
-
-		EndLevel();
+		UE_LOG(LogTemp, Warning, TEXT("클리어 조건 달성! 웨이브 클리어"));
+		OnWaveTimeUp();
 	}
-	else
+	/*else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("목표 점수 부족"));
+		UE_LOG(LogTemp, Warning, TEXT("웨이브 클리어 실패"));
 
 		OnGameOver();
-	}
-}
-
-void AMyGameState::EndWave()
-{
+	}*/
 }
 
 void AMyGameState::EndLevel()
@@ -180,5 +198,61 @@ void AMyGameState::EndLevel()
 
 void AMyGameState::OnGameOver()
 {
+	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+	{
+		if (AMyPlayerController* MyPlayerController = Cast<AMyPlayerController>(PlayerController))
+		{
+			MyPlayerController->SetPause(true);
+			MyPlayerController->ShowMainMenu(true);
+		}
+	}
+
 	UE_LOG(LogTemp, Warning, TEXT("게임 오버"));
+}
+
+void AMyGameState::UpdateHUD()
+{
+	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+	{
+		AMyPlayerController* MyPlayerController = Cast<AMyPlayerController>(PlayerController);
+		
+		if (UUserWidget* HUDWidget = MyPlayerController->GetHUDWidget())
+		{
+			if (UTextBlock* TimeText = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("Time"))))
+			{
+				float RemainingTime = GetWorldTimerManager().GetTimerRemaining(WaveTimerHandle);
+				TimeText->SetText(FText::FromString(FString::Printf(TEXT("Time : %.1f"), RemainingTime)));
+			}
+
+			if (UTextBlock* ScoreText = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("TargetScore"))))
+			{
+				if (UGameInstance* GameInstance = GetGameInstance())
+				{
+					UMyGameInstance* MyGameInstance = Cast<UMyGameInstance>(GameInstance);
+
+					if (MyGameInstance)
+					{
+						ScoreText->SetText(FText::FromString(FString::Printf(TEXT("%d / %d"), CurrentWaveScore, TargetWaveScore)));
+					}
+				}
+			}
+
+			if (UTextBlock* LevelIndexText = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("Level"))))
+			{
+				LevelIndexText->SetText(FText::FromString(FString::Printf(TEXT("Level : %d"), CurrentLevelIndex+1)));
+			}
+
+			if (UTextBlock* WaveIndexText = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("Wave"))))
+			{
+				if (BreakTime)
+				{
+					WaveIndexText->SetText(FText::FromString(FString::Printf(TEXT("BrakeTime"))));
+				}
+				else
+				{
+					WaveIndexText->SetText(FText::FromString(FString::Printf(TEXT("Wave : %d"), CurrentWaveCount)));
+				}
+			}
+		}
+	}
 }

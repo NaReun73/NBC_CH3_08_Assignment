@@ -6,6 +6,7 @@
 
 class USpringArmComponent;	// 스프링 암 컴포넌트 전방선언
 class UCameraComponent;		// 카메라 컴포넌트 전방선언
+class UWidgetComponent;
 struct FInputActionValue;	// Enhanced Input 약션 값을 받을 떄 사용하는 구조체
 
 UCLASS()
@@ -22,6 +23,8 @@ public:
 	// 카메라 컴포넌트
 	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = "Camera")
 	UCameraComponent* CameraComp;
+	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "UI")
+	UWidgetComponent* OverheadWidget;
 
 protected:
 	// 채력
@@ -30,6 +33,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	float Health;
 
+	virtual void BeginPlay() override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	// IA_Move와 IA_Jump 등을 처리할 함수 원형
@@ -44,6 +48,8 @@ protected:
 	void Look(const FInputActionValue& value);
 
 	void OnDeath();
+	void UpdateOverheadHP();
+
 public:
 	UFUNCTION(BlueprintPure, Category = "Health")
 	float GetHealth() const;

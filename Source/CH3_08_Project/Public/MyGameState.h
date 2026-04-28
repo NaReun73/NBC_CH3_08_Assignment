@@ -17,10 +17,10 @@ public:
 	int32 Score;
 
 	// 레벨 목표 점수
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Score")
+	/*UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Score")
 	int32 TargetLevelScore;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Score")
-	int32 CurrentLevelScore;
+	int32 CurrentLevelScore;*/
 	// 웨이브 목표 점수
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Score")
 	int32 TargetWaveScore;
@@ -38,6 +38,8 @@ public:
 	// 최대 웨이브 수
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wave")
 	int32 MaxWaves;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Wave")
+	bool BreakTime;
 
 	// 현재 진행 중인 레벨 인덱스
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Level")
@@ -50,18 +52,17 @@ public:
 	TArray<FName> LevelMapNames;
 
 	//매 레벨이 끝나기 전까지 시간이 흐르도록 관리하는 타이머
-	FTimerHandle LevelTimerHandle;
+	//FTimerHandle LevelTimerHandle;
 	// 웨이브 끝나기 전까지 시간이 흐르도록 관리하는 타이머
 	FTimerHandle WaveTimerHandle;
+	FTimerHandle HUDUpdateTimerHandle;
+
+	
 
 	UFUNCTION(BlueprintPure, Category = "Score")
 	int32 GetScore() const;
 	UFUNCTION(BlueprintCallable, Category = "Score")
 	void AddScore(int32 Amount);
-	UFUNCTION(BlueprintPure, Category = "Score")
-	int32 GetTargetLevelScore() const;
-	UFUNCTION(BlueprintPure, Category = "Score")
-	int32 GetCurrentLevelScore() const;
 
 	// 게임이 완전히 끝났을 때 (모든 레벨 종료) 실행되는 함수
 	UFUNCTION(BlueprintCallable, Category = "Level")
@@ -74,9 +75,11 @@ public:
 	// 웨이브 제한 시간이 끝났을 때
 	void OnWaveTimeUp();
 	// 별을 획득했을 떄
-	void OnCompleteLevelScore();
+	void OnCompleteWaveScore();
 	// 웨이브 종료
 	void EndWave();
 	// 레벨을 강제 종료하고 다음 레벨로 이동
 	void EndLevel();
+	// HUD 없데이트
+	void UpdateHUD();
 };

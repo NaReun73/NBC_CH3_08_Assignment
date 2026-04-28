@@ -18,7 +18,7 @@ void AStarItem::ActivateItem(AActor* Activator)
 			if (AMyGameState* GameState = World->GetGameState<AMyGameState>())
 			{
 				GameState->AddScore(PointValue);
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%d Point"), PointValue));
+				GameState->OnCompleteWaveScore();
 			}
 		}
 	}

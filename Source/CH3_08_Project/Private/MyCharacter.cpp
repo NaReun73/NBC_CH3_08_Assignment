@@ -1,8 +1,12 @@
 #include "MyCharacter.h"
 #include "MyPlayerController.h"
+#include "MyGameState.h"
 #include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Components/WidgetComponent.h"
+#include "Components/TextBlock.h"
 
 AMyCharacter::AMyCharacter()
 {
@@ -23,8 +27,18 @@ AMyCharacter::AMyCharacter()
 	// 카메라는 스프링 암의 회전을 따르므로 꺼줌
 	CameraComp->bUsePawnControlRotation = false;
 
+	OverheadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidget"));
+	OverheadWidget->SetupAttachment(GetMesh());
+	OverheadWidget->SetWidgetSpace(EWidgetSpace::Screen);
+
 	MaxHealth = 100.0f;
 	Health = MaxHealth;
+}
+
+void AMyCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	UpdateOverheadHP();
 }
 
 void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -139,7 +153,7 @@ float AMyCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& Da
 	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
 	Health = FMath::Clamp(Health - DamageAmount, 0.0f, MaxHealth);
-	UE_LOG(LogTemp, Warning, TEXT("Health : %f"), Health)
+	UpdateOverheadHP();
 
 	if (Health <= 0.0f)
 	{
@@ -152,10 +166,29 @@ float AMyCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& Da
 void AMyCharacter::AddHealth(float Amount)
 {
 	Health = FMath::Clamp(Health + Amount, 0.0f, MaxHealth);
-	UE_LOG(LogTemp, Warning, TEXT("Healing : %f ,Health : %f"), Amount, Health)
+	UpdateOverheadHP();
 }
 
 void AMyCharacter::OnDeath()
 {
+	AMyGameState* MyGameState = GetWorld() ? GetWorld()->GetGameState<AMyGameState>() : nullptr;
 
+	if (MyGameState)
+	{
+		MyGameState->OnGameOver();
+	}
+}
+
+void AMyCharacter::UpdateOverheadHP()
+{
+	if (!OverheadWidget)	return;
+
+	UUserWidget* OverheadWidgetInstance = OverheadWidget->GetUserWidgetObject();
+
+	if (!OverheadWidgetInstance)	return;
+
+	if (UTextBlock* HPText = Cast<UTextBlock>(OverheadWidgetInstance->GetWidgetFromName(TEXT("OverheadHP"))))
+	{
+		HPText->SetText(FText::FromString(FString::Printf(TEXT("%.0f / %.0f"), Health, MaxHealth)));
+	}
 }
