@@ -43,6 +43,9 @@ ABaseItem::ABaseItem()
 	// 플레이어가 범위위 안에 들어올 떄 자동으로 OnItemOverlap을 호출
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &ABaseItem::OnItemOverlap);
 	Collision->OnComponentEndOverlap.AddDynamic(this, &ABaseItem::OnItemEndOverlap);
+
+	Tags.Add(FName("Item"));
+	DestroyTime = 20.0f;
 }
 
 void ABaseItem::OnItemOverlap(
@@ -56,7 +59,7 @@ void ABaseItem::OnItemOverlap(
 	// OtherActor가 플레이어인지 확인 ("Player" 태그 활용)
 	if (OtherActor && OtherActor->ActorHasTag("Player"))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("Overlap")));
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("Overlap")));
 		ActivateItem(OtherActor);
 	}
 }
@@ -86,3 +89,9 @@ void ABaseItem::DestroyItem()
 	Destroy();
 }
 
+void ABaseItem::BeginPlay()
+{
+	Super::BeginPlay();
+
+	SetLifeSpan(DestroyTime);
+}

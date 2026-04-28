@@ -20,7 +20,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Spawning")
 	UBoxComponent* SpawningBox;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawning")
-	UDataTable* ItemDataTable;
+	TArray<UDataTable*> ItemDataTable;
 
 	UFUNCTION(BlueprintCallable, Category="Spawning")
 	AActor* SpawnRandomItem();

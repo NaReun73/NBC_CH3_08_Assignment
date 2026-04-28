@@ -6,15 +6,17 @@
 #include "MyPlayerController.h"
 #include "Components/TextBlock.h"
 #include "Blueprint/UserWidget.h"
+#include "EngineUtils.h"
 
 AMyGameState::AMyGameState()
 {
 	Score = 0;
-	TargetWaveScore = 5;
+	TargetWaveScore = 30;
 	CurrentWaveScore = 0;
 	WaveDuration = 60.0f;
-	WaveBreakTime = 1.0f;
+	WaveBreakTime = 10.0f;
 	BreakTime = false;
+	SpawnCount = 15;
 	CurrentWaveCount = 0;
 	MaxWaves = 3;
 	CurrentLevelIndex = 0;
@@ -73,8 +75,9 @@ void AMyGameState::StartLevel()
 		}
 	}
 
-	TargetWaveScore = 5;
+	TargetWaveScore = 30;
 	CurrentWaveCount = 0;
+	SpawnCount = 15;
 	StartWave();
 }
 
@@ -114,6 +117,7 @@ void AMyGameState::StartWave()
 void AMyGameState::OnWaveTimeUp()
 {
 	GetWorldTimerManager().ClearTimer(WaveTimerHandle);
+	ClearAllItems();
 
 	// 목표 점수 달성 확인
 	if (CurrentWaveScore < TargetWaveScore)
@@ -137,6 +141,7 @@ void AMyGameState::OnWaveTimeUp()
 		// 웨이브 시간 감소
 		WaveDuration -= 10.0f;
 		CurrentWaveScore = 0;
+		SpawnCount -= 3;
 	}
 }
 
@@ -160,6 +165,15 @@ void AMyGameState::EndLevel()
 	// 타이머 해제
 	GetWorldTimerManager().ClearTimer(WaveTimerHandle);
 
+	// 모든 레벨을 다 돌았으면 게임 오버
+	if (CurrentLevelIndex >= MaxLevels)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("모든 레벨 완료"));
+
+		OnGameOver();
+		return;
+	}
+
 	if (UGameInstance* GameInstance = GetGameInstance())
 	{
 		UMyGameInstance* MyGameInstance = Cast<UMyGameInstance>(GameInstance);
@@ -169,15 +183,6 @@ void AMyGameState::EndLevel()
 			CurrentLevelIndex++;
 			MyGameInstance->CurrentLevelIndex = CurrentLevelIndex;
 		}
-	}
-
-	// 모든 레벨을 다 돌았으면 게임 오버
-	if (CurrentLevelIndex >= MaxLevels)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("모든 레벨 완료"));
-
-		OnGameOver();
-		return;
 	}
 
 	// 레벨 맵 이름이 있으면 해당 맵 불러오기
@@ -250,9 +255,32 @@ void AMyGameState::UpdateHUD()
 				}
 				else
 				{
+					UFunction* PlayAnimFunc = HUDWidget->FindFunction(FName("WaveStartAnim"));
+
+					if (PlayAnimFunc)
+					{
+						HUDWidget->ProcessEvent(PlayAnimFunc, nullptr);
+					}
+
 					WaveIndexText->SetText(FText::FromString(FString::Printf(TEXT("Wave : %d"), CurrentWaveCount)));
 				}
 			}
+		}
+	}
+}
+
+bool AMyGameState::GetBreakTime() const
+{
+	return BreakTime;
+}
+
+void AMyGameState::ClearAllItems()
+{
+	for (TActorIterator<AActor> It(GetWorld()); It; ++It)
+	{
+		if (It->ActorHasTag(FName("Item")))
+		{
+			It->Destroy();
 		}
 	}
 }

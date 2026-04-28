@@ -44,22 +44,6 @@ void AMyPlayerController::BeginPlay()
 		ShowMainMenu(false);
 	}
 
-	// HUD 위젯 생성 및 표시
-	/*if (HUDWidgetClass)
-	{
-		HUDWidgetInstance = CreateWidget<UUserWidget>(this, HUDWidgetClass);
-		if (HUDWidgetInstance)
-		{
-			HUDWidgetInstance->AddToViewport();
-		}
-	}*/
-
-	/*AMyGameState* MyGameState = GetWorld() ? GetWorld()->GetGameState<AMyGameState>() : nullptr;
-	
-	if (MyGameState)
-	{
-		MyGameState->UpdateHUD();
-	}*/
 }
 
 UUserWidget* AMyPlayerController::GetHUDWidget() const

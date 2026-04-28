@@ -33,6 +33,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item|Component")
 	UStaticMeshComponent* ItemMesh;
 
+	float DestroyTime;
+
 	// ItemInterface에서 요구하는 함수들
 	virtual void OnItemOverlap(
 		UPrimitiveComponent* OverlappedComp,
@@ -51,4 +53,6 @@ protected:
 
 	// 아이템을 제거하는 공통 함수
 	virtual void DestroyItem();
+
+	virtual void BeginPlay() override;
 };

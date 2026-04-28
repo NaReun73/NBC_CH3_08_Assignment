@@ -2,6 +2,7 @@
 #include "Components/BoxComponent.h"
 #include "Engine/World.h"
 #include "GameFramework/Actor.h"
+#include "MyGameInstance.h"
 
 ASpawnVolume::ASpawnVolume()
 {
@@ -44,12 +45,23 @@ FVector ASpawnVolume::GetRandomPointInVolume() const
 
 FItemSpawnRow* ASpawnVolume::GetRandomItem() const
 {
-	if (!ItemDataTable) return nullptr;
+	if (ItemDataTable.IsEmpty()) return nullptr;
+
+	int32 ItemDataTabelIndex;
+
+	if (UGameInstance* GameInstance = GetGameInstance())
+	{
+		UMyGameInstance* MyGameInstance = Cast<UMyGameInstance>(GameInstance);
+		if (MyGameInstance)
+		{
+			ItemDataTabelIndex = MyGameInstance->CurrentLevelIndex;
+		}
+	}
 
 	// 모든 Row(행) 가져오기
 	TArray<FItemSpawnRow*> AllRows;
 	static const FString ConextString(TEXT("ItemPawnContext"));
-	ItemDataTable->GetAllRows(ConextString, AllRows);
+	ItemDataTable[ItemDataTabelIndex]->GetAllRows(ConextString, AllRows);
 
 	if (AllRows.IsEmpty()) return nullptr;
 

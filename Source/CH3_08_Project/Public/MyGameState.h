@@ -40,6 +40,8 @@ public:
 	int32 MaxWaves;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Wave")
 	bool BreakTime;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wave")
+	int32 SpawnCount;
 
 	// 현재 진행 중인 레벨 인덱스
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Level")
@@ -63,6 +65,8 @@ public:
 	int32 GetScore() const;
 	UFUNCTION(BlueprintCallable, Category = "Score")
 	void AddScore(int32 Amount);
+	UFUNCTION(BlueprintPure, Category = "Wave")
+	bool GetBreakTime() const;
 
 	// 게임이 완전히 끝났을 때 (모든 레벨 종료) 실행되는 함수
 	UFUNCTION(BlueprintCallable, Category = "Level")
@@ -82,4 +86,5 @@ public:
 	void EndLevel();
 	// HUD 없데이트
 	void UpdateHUD();
+	void ClearAllItems();
 };
