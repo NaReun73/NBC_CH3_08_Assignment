@@ -37,8 +37,13 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Speed")
 	float DefaultSpeed;
 
+	// 조작 상태 확인 (정상, 반대)
+	bool ControlReversed;
+
 	// 이동속도 감소시간
 	FTimerHandle SlowTimerHandle;
+	// 조작 반대 시간
+	FTimerHandle ReverseControlTimerHandle;
 
 	virtual void BeginPlay() override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -58,6 +63,8 @@ protected:
 	void UpdateOverheadHP();
 	// 이동속도 복구
 	void RestoreSpeed();
+	// 조작 상태 복구
+	void RestoreControl();
 
 public:
 	UFUNCTION(BlueprintPure, Category = "Health")
@@ -68,4 +75,7 @@ public:
 	// 이동속도 감소 효과
 	UFUNCTION(BlueprintCallable, Category = "Speed")
 	void ApplySlowEffect(float Duration, float PenaltyMultiplier);
+	// 조작 반대 효과
+	UFUNCTION(BlueprintCallable, Category = "RverseControl")
+	void ApplyReverseControl(float Duration);
 };

@@ -36,6 +36,8 @@ AMyCharacter::AMyCharacter()
 
 	DefaultSpeed = 800.0f;
 	GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
+
+	ControlReversed = false;
 }
 
 void AMyCharacter::BeginPlay()
@@ -105,7 +107,8 @@ void AMyCharacter::Move(const FInputActionValue& value)
 	if (!Controller) return;
 
 	// value는 Axis2D로 설정된 IA_Move의 입력값을 담고 있음 (x=1, y=0 -> 전진)
-	const FVector2D MoveInput = value.Get<FVector2D>();
+	
+	const FVector2D MoveInput = ControlReversed ? -(value.Get<FVector2D>()) : value.Get<FVector2D>();
 
 	if (!FMath::IsNearlyZero(MoveInput.X))
 	{
@@ -219,4 +222,21 @@ void AMyCharacter::ApplySlowEffect(float Duration, float PenaltyMultiplier)
 void AMyCharacter::RestoreSpeed()
 {
 	GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
+}
+
+void AMyCharacter::ApplyReverseControl(float Duration)
+{
+	ControlReversed = true;
+
+	GetWorldTimerManager().SetTimer(
+		ReverseControlTimerHandle, 
+		this, 
+		&AMyCharacter::RestoreControl, 
+		Duration, 
+		false);
+}
+
+void AMyCharacter::RestoreControl()
+{
+	ControlReversed = false;
 }
