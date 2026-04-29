@@ -33,6 +33,13 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	float Health;
 
+	// 이동속도
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Speed")
+	float DefaultSpeed;
+
+	// 이동속도 감소시간
+	FTimerHandle SlowTimerHandle;
+
 	virtual void BeginPlay() override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
@@ -49,10 +56,16 @@ protected:
 
 	void OnDeath();
 	void UpdateOverheadHP();
+	// 이동속도 복구
+	void RestoreSpeed();
 
 public:
 	UFUNCTION(BlueprintPure, Category = "Health")
 	float GetHealth() const;
 	UFUNCTION(BlueprintCallable, Category = "Health")
 	void AddHealth(float Amount);
+
+	// 이동속도 감소 효과
+	UFUNCTION(BlueprintCallable, Category = "Speed")
+	void ApplySlowEffect(float Duration, float PenaltyMultiplier);
 };

@@ -33,6 +33,9 @@ AMyCharacter::AMyCharacter()
 
 	MaxHealth = 100.0f;
 	Health = MaxHealth;
+
+	DefaultSpeed = 800.0f;
+	GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
 }
 
 void AMyCharacter::BeginPlay()
@@ -191,4 +194,29 @@ void AMyCharacter::UpdateOverheadHP()
 	{
 		HPText->SetText(FText::FromString(FString::Printf(TEXT("%.0f / %.0f"), Health, MaxHealth)));
 	}
+}
+
+void AMyCharacter::ApplySlowEffect(float Duration, float PenaltyMultiplier)
+{
+	if (GetWorldTimerManager().IsTimerActive(SlowTimerHandle))
+	{
+		GetWorldTimerManager().ClearTimer(SlowTimerHandle);
+	}
+
+	GetCharacterMovement()->MaxWalkSpeed *= PenaltyMultiplier;
+
+	GetCharacterMovement()->MaxWalkSpeed = FMath::Max(100.0f, GetCharacterMovement()->MaxWalkSpeed);
+
+	GetWorldTimerManager().SetTimer(
+		SlowTimerHandle,
+		this,
+		&AMyCharacter::RestoreSpeed,
+		Duration,
+		false
+	);
+}
+
+void AMyCharacter::RestoreSpeed()
+{
+	GetCharacterMovement()->MaxWalkSpeed = DefaultSpeed;
 }

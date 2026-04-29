@@ -3,7 +3,7 @@
 
 AMineItem::AMineItem()
 {
-	Damage = 10.0f;
+	Damage = 20.0f;
 	ItemType = "Mine";
 }
 
@@ -21,6 +21,8 @@ void AMineItem::BeginPlay()
 
 void AMineItem::ActivateItem(AActor* Activator)
 {
+	Super::ActivateItem(Activator);
+
 	if (Activator && Activator->ActorHasTag("Player"))
 	{
 		UGameplayStatics::ApplyDamage(
@@ -30,7 +32,7 @@ void AMineItem::ActivateItem(AActor* Activator)
 			this,
 			UDamageType::StaticClass()
 		);
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::Printf(TEXT("%f Damage"), Damage));
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::Printf(TEXT("%f Damage"), Damage));
 	}
 
 	DestroyItem();

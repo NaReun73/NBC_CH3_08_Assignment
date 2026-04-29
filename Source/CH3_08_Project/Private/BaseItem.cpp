@@ -1,5 +1,7 @@
 ﻿#include "BaseItem.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystemComponent.h"
 
 ABaseItem::ABaseItem()
 {
@@ -59,7 +61,6 @@ void ABaseItem::OnItemOverlap(
 	// OtherActor가 플레이어인지 확인 ("Player" 태그 활용)
 	if (OtherActor && OtherActor->ActorHasTag("Player"))
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("Overlap")));
 		ActivateItem(OtherActor);
 	}
 }
@@ -70,12 +71,50 @@ void ABaseItem::OnItemEndOverlap(
 	UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex)
 {
-	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("EndOverlap")));
 }
 
 void ABaseItem::ActivateItem(AActor* Activator)
 {
+	UParticleSystemComponent* Particle = nullptr;
 
+	if (PickupParticle)
+	{
+		Particle = UGameplayStatics::SpawnEmitterAtLocation(
+			GetWorld(),
+			PickupParticle,
+			GetActorLocation(),
+			GetActorRotation(),
+			true
+		);
+	}
+
+	if (Particle)
+	{
+		FTimerHandle DestroyParticleTimerHandle;
+		TWeakObjectPtr<UParticleSystemComponent> WeakParticle = Particle;
+
+		GetWorld()->GetTimerManager().SetTimer(
+			DestroyParticleTimerHandle,
+			[WeakParticle]()
+			{
+				if (WeakParticle.IsValid())
+				{
+					WeakParticle->DestroyComponent();
+				}
+			},
+			1.0f,
+			false
+		);
+	}
+
+	if (PickupSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+			GetWorld(),
+			PickupSound,
+			GetActorLocation()
+		);
+	}
 }
 
 FName ABaseItem::GetItemType() const

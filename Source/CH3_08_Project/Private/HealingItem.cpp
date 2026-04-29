@@ -9,12 +9,14 @@ AHealingItem::AHealingItem()
 
 void AHealingItem::ActivateItem(AActor* Activator)
 {
+	Super::ActivateItem(Activator);
+
 	if (Activator && Activator->ActorHasTag("Player"))
 	{
 		if (AMyCharacter* PlayerCharacter = Cast<AMyCharacter>(Activator))
 		{
 			PlayerCharacter->AddHealth(HealAmount);
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%f Healing"), HealAmount));
+			//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("%f Healing"), HealAmount));
 		}
 	}
 

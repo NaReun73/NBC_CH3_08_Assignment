@@ -32,6 +32,12 @@ protected:
 	// 아이템 시각 표현용 메시
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item|Component")
 	UStaticMeshComponent* ItemMesh;
+	// 아이템 획득 파티클
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item|Effects")
+	UParticleSystem* PickupParticle;
+	// 아이템 획득 사운드
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item|Effects")
+	USoundBase* PickupSound;
 
 	float DestroyTime;
 

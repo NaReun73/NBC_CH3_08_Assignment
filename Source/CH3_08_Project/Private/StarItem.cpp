@@ -9,6 +9,8 @@ AStarItem::AStarItem()
 
 void AStarItem::ActivateItem(AActor* Activator)
 {
+	Super::ActivateItem(Activator);
+
 	if (Activator && Activator->ActorHasTag("Player"))
 	{
 		// 현재 게임의 월드를 가져옴
