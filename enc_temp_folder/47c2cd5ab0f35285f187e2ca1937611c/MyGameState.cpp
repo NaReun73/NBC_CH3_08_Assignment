@@ -16,7 +16,7 @@ AMyGameState::AMyGameState()
 	WaveDuration = 60.0f;
 	WaveBreakTime = 10.0f;
 	BreakTime = false;
-	bWasBreakTime = BreakTime;
+	bWasBreakTime = false;
 	SpawnCount = 15;
 	CurrentWaveCount = 0;
 	MaxWaves = 3;
@@ -266,16 +266,6 @@ void AMyGameState::UpdateHUD()
 				else
 				{
 					WaveIndexText->SetText(FText::FromString(FString::Printf(TEXT("Wave : %d"), CurrentWaveCount)));
-
-					if (bWasBreakTime)
-					{
-						UFunction* PlayAnimFunc = HUDWidget->FindFunction(FName("PlayWaveStartAnim"));
-
-						if (PlayAnimFunc)
-						{
-							HUDWidget->ProcessEvent(PlayAnimFunc, nullptr);
-						}
-					}
 				}
 
 				bWasBreakTime = BreakTime;

@@ -42,6 +42,8 @@ public:
 	// 웨이브 사이 휴식시간인지 확인
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Wave")
 	bool BreakTime;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wave")
+	bool bWasBreakTime;
 	// 웨이브 별 아이템 스폰 최대치
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wave")
 	int32 SpawnCount;
