@@ -30,6 +30,7 @@ public:
 	// 각 Wave가 유지되는 시간
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wave")
 	float WaveDuration;
+	// 휴식 시간
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wave")
 	float WaveBreakTime;
 	// 현재 웨이브
@@ -38,8 +39,10 @@ public:
 	// 최대 웨이브 수
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wave")
 	int32 MaxWaves;
+	// 웨이브 사이 휴식시간인지 확인
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Wave")
 	bool BreakTime;
+	// 웨이브 별 아이템 스폰 최대치
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wave")
 	int32 SpawnCount;
 
@@ -65,6 +68,8 @@ public:
 	int32 GetScore() const;
 	UFUNCTION(BlueprintCallable, Category = "Score")
 	void AddScore(int32 Amount);
+	UFUNCTION(BlueprintPure, Category = "Wave")
+	float GetWaveDuration() const;
 	UFUNCTION(BlueprintPure, Category = "Wave")
 	bool GetBreakTime() const;
 

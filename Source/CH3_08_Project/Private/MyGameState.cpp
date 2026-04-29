@@ -269,6 +269,11 @@ void AMyGameState::UpdateHUD()
 	}
 }
 
+float AMyGameState::GetWaveDuration() const
+{
+	return GetWorldTimerManager().GetTimerRemaining(WaveTimerHandle);
+}
+
 bool AMyGameState::GetBreakTime() const
 {
 	return BreakTime;
