@@ -6,6 +6,7 @@
 #include "BaseItem.generated.h"
 
 class USphereComponent;
+class URotatingMovementComponent;
 
 UCLASS()
 class CH3_08_PROJECT_API ABaseItem : public AActor, public IItemInterface
@@ -32,6 +33,9 @@ protected:
 	// 아이템 시각 표현용 메시
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item|Component")
 	UStaticMeshComponent* ItemMesh;
+	// 아이템 메시를 회전 시키기 위한 컴포넌트
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item|Component")
+	URotatingMovementComponent* RotatingComponent;
 	// 아이템 획득 파티클
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item|Effects")
 	UParticleSystem* PickupParticle;

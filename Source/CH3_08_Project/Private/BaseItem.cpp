@@ -2,6 +2,7 @@
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "GameFramework/RotatingMovementComponent.h"
 
 ABaseItem::ABaseItem()
 {
@@ -40,6 +41,13 @@ ABaseItem::ABaseItem()
 	ItemMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ItemMesh"));
 	ItemMesh->SetupAttachment(StaticMesh);
 	ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	// 컴포넌트 생성
+	RotatingComponent = CreateDefaultSubobject<URotatingMovementComponent>(TEXT("RotatingComponent"));
+	// 아이템 메쉬만 회전
+	RotatingComponent->SetUpdatedComponent(ItemMesh);
+	// 회전 속도 설정 (Roll, Pitch, Yaw 순서)
+	RotatingComponent->RotationRate = FRotator(0.0f, 0.0f, 90.0f);
 
 	// Overlap 이벤트 바인딩
 	// 플레이어가 범위위 안에 들어올 떄 자동으로 OnItemOverlap을 호출

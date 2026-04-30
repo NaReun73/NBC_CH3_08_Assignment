@@ -116,6 +116,7 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 }
 
+// 레벨 KillZ로 인해 캐릭터가 죽었을 때
 void AMyCharacter::FellOutOfWorld(const class UDamageType& dmgType)
 {
 	AMyGameState* MyGameState = GetWorld() ? GetWorld()->GetGameState<AMyGameState>() : nullptr;

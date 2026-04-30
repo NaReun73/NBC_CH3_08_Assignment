@@ -61,7 +61,7 @@ void AMyGameState::AddScore(int32 Amount)
 				{
 					if (UTextBlock* AddPointText = Cast<UTextBlock>(HUDWidget->GetWidgetFromName(TEXT("AddPoint"))))
 					{
-						AddPointText->SetText(FText::FromString(FString::Printf(TEXT("%+d"), Amount)));
+						AddPointText->SetText(FText::FromString(FString::Printf(TEXT("%d"), Amount)));
 
 						UFunction* PlayAnimFunc = HUDWidget->FindFunction(FName("PlayAddPointAnim"));
 						if (PlayAnimFunc)
@@ -73,7 +73,7 @@ void AMyGameState::AddScore(int32 Amount)
 			}
 		}
 	}
-	CurrentWaveScore = FMath::Max(0, CurrentWaveScore + Amount);
+	CurrentWaveScore += Amount;
 }
 
 void AMyGameState::StartLevel()
