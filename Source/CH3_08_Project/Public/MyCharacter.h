@@ -23,11 +23,12 @@ public:
 	// 카메라 컴포넌트
 	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = "Camera")
 	UCameraComponent* CameraComp;
+	// HP 위젯
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "UI")
 	UWidgetComponent* OverheadWidget;
+	// 디버프 위젯
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "UI")
 	UWidgetComponent* DebuffsWidget;
-
 protected:
 	// 채력
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
@@ -51,6 +52,10 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
+	virtual void FellOutOfWorld(const class UDamageType& dmgType) override;
+
+
 	// IA_Move와 IA_Jump 등을 처리할 함수 원형
 	// Enhanced Input에서 액션 값은 FInputActionValue로 전달
 	UFUNCTION()

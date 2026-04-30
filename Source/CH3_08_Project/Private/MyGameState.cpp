@@ -13,7 +13,7 @@ AMyGameState::AMyGameState()
 	Score = 0;
 	TargetWaveScore = 30;
 	CurrentWaveScore = 0;
-	WaveDuration = 60.0f;
+	WaveDuration = 90.0f;
 	WaveBreakTime = 10.0f;
 	BreakTime = false;
 	bWasBreakTime = BreakTime;
@@ -139,8 +139,8 @@ void AMyGameState::OnWaveTimeUp()
 			WaveBreakTime,
 			false
 		);
-		// 웨이브 시간 감소
-		WaveDuration -= 10.0f;
+		// 웨이브 시간 감소, 점수 초기화, 아이템 생성수 감소
+		WaveDuration -= 15.0f;
 		CurrentWaveScore = 0;
 		SpawnCount -= 3;
 	}

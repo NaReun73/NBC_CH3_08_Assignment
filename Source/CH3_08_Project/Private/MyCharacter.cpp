@@ -116,6 +116,18 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 }
 
+void AMyCharacter::FellOutOfWorld(const class UDamageType& dmgType)
+{
+	AMyGameState* MyGameState = GetWorld() ? GetWorld()->GetGameState<AMyGameState>() : nullptr;
+
+	if (MyGameState)
+	{
+		MyGameState->OnGameOver();
+	}
+
+	Super::FellOutOfWorld(dmgType);
+}
+
 void AMyCharacter::Move(const FInputActionValue& value)
 {
 	// 컨트롤러 확인
